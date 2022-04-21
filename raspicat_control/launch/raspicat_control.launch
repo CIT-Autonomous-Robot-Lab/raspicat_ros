@@ -24,11 +24,12 @@
             <param name="device_file" value="$(arg device_file_buzzer)" />
         </node>
 
+<!--
         <node name="lightsensors" pkg="raspimouse_control" type="lightsensors" required="true">
             <param name="frequency" value="10" />
             <param name="device_file" value="$(arg device_file_lightsensor)" />
         </node>
-
+-->
         <node name="leds" pkg="raspimouse_control" type="leds" required="true">
             <param name="device_file_0" value="$(arg device_file_led0)" />
             <param name="device_file_1" value="$(arg device_file_led1)" />
