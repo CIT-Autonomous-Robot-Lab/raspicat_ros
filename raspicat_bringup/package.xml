@@ -24,6 +24,7 @@
   <depend>teleop_twist_keyboard</depend>
   <depend>twist_mux</depend>
   <depend>urg_node</depend>
+  <depend>rplidar_ros</depend>
 
   <test_depend>roslaunch</test_depend>
 

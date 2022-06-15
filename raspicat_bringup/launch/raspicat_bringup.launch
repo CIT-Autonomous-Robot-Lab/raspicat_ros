@@ -3,6 +3,8 @@
   <!-- Arguments -->
   <arg name="imu"         default="false"/>
   <arg name="joy"         default="false"/>
+  <arg name="urg"         default="false"/>
+  <arg name="rplidar"     default="false"/>
   <arg name="lidar_ether" default="false"/>
   <arg name="lidar_usb"   default="true"/>
 
@@ -19,10 +21,19 @@
   <include file="$(find raspicat_bringup)/launch/raspicat_core.launch"/>
   
   <!-- URG node -->
-  <node pkg="urg_node" name="urg_node" type="urg_node" required="true">
+  <node if="$(arg urg)" pkg="urg_node" name="urg_node" type="urg_node" required="true">
     <param name="frame_id" value="$(arg lidar_frame_id)"/>
     <param if="$(arg lidar_ether)"  name="ip_address"   value="$(arg lidar_ip_address)"/>
     <param if="$(arg lidar_usb)"    name="serial_port"  value="$(arg lidar_serial_port)"/>
+  </node>
+
+  <!-- Rplidar_ros -->
+  <node if="$(arg rplidar)" pkg="rplidar_ros" name="rplidarNode" type="rplidarNode" output="screen">
+    <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
+    <param name="serial_baudrate"     type="int"    value="256000"/>
+    <param name="frame_id"            type="string" value="$(arg lidar_frame_id)"/>
+    <param name="inverted"            type="bool"   value="false"/>
+    <param name="angle_compensate"    type="bool"   value="true"/>
   </node>
 
   <!-- rt_usb_9axisimu_driver -->
