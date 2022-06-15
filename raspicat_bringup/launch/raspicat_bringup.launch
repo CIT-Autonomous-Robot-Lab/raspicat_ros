@@ -41,7 +41,7 @@
   <include if="$(arg vlp16)" file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
     <arg name="laserscan_resolution"    value="0.004"/>
     <arg name="laserscan_ring"          value="-1"/>
-    <param name="frame_id"              value="$(arg lidar_frame_id)"/>
+    <arg name="frame_id"                value="$(arg lidar_frame_id)"/>
     <arg name="min_range"               value="0.693"/>
     <arg name="max_range"               value="103.95"/>
     <arg name="view_direction"          value="0.0"/>
