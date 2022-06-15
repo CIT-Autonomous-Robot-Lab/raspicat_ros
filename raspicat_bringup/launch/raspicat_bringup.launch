@@ -5,6 +5,7 @@
   <arg name="joy"         default="false"/>
   <arg name="urg"         default="false"/>
   <arg name="rplidar"     default="false"/>
+  <arg name="velodyne"    default="false"/>
   <arg name="lidar_ether" default="false"/>
   <arg name="lidar_usb"   default="true"/>
 
@@ -35,6 +36,18 @@
     <param name="inverted"            type="bool"   value="false"/>
     <param name="angle_compensate"    type="bool"   value="true"/>
   </node>
+
+  <!-- VLP16 -->
+  <include if="$(arg velodyne)" file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
+    <arg name="laserscan_resolution" value="0.004" />
+    <arg name="laserscan_ring" value="-1" />
+    <arg name="frame_id" value="urg_lrf_link" />
+    <arg name="min_range" value="0.693" />
+    <arg name="max_range" value="103.95" />
+    <arg name="view_direction" value="0.0" />
+    <arg name="view_width" value="4.335" />
+  </include>
+
 
   <!-- rt_usb_9axisimu_driver -->
   <include if="$(arg imu)" file="$(find rt_usb_9axisimu_driver)/launch/rt_usb_9axisimu_driver.launch">
