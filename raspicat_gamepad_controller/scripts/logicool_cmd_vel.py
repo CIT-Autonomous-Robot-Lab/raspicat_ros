@@ -1,20 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from cgi import test
-from dataclasses import dataclass
-from lib2to3.pgen2.token import DOUBLESLASH
-from re import T
-from time import sleep
-from turtle import Turtle
-from typing import Tuple
-
-from matplotlib.pyplot import flag
 import rospy
 from geometry_msgs.msg import Twist
 from std_srvs.srv import Trigger, TriggerResponse
 from sensor_msgs.msg import Joy
 
-dash = False
+autorun_flag = False
 
 class JoyTwist(object):
     def __init__(self):
@@ -40,13 +31,13 @@ class JoyTwist(object):
         self.level = self.limitter(self.level)
 
         twist = Twist()
-        global dash
+        global autorun_flag
 
         if joy_msg.buttons[3] == 1:
-            dash = False
+            autorun_flag = False
 
         if joy_msg.buttons[1] == 1:
-            dash = True
+            autorun_flag = True
             if joy_msg.axes[3] == 1:
                 twist.angular.z = 1.4
                 self._twist_pub.publish(twist)
@@ -54,7 +45,7 @@ class JoyTwist(object):
                 twist.angular.z = -1.4
                 self._twist_pub.publish(twist)
 
-        elif dash == True:
+        elif autorun_flag == True:
             twist.linear.x = 0.4
             self._twist_pub.publish(twist)
             if joy_msg.axes[3] > 0:
@@ -90,7 +81,7 @@ class JoyTwist(object):
             self.smooth_flag = True
         
         else:
-            if (dash == False):
+            if (autorun_flag == False):
                 twist.linear.x = 0
                 twist.angular.z = 0
                 if self.smooth_flag:
@@ -102,11 +93,18 @@ class JoyTwist(object):
             self.level -= 1
 
 if __name__ == '__main__':
-    rospy.wait_for_service('/motor_on')
-    rospy.wait_for_service('/motor_off')
-    rospy.on_shutdown(rospy.ServiceProxy('/motor_off', Trigger).call)
-    rospy.ServiceProxy('/motor_on', Trigger).call()
     rospy.init_node('logicool_cmd_vel')
-    dash = False
+
+    if rospy.get_param("/logicool_cmd_vel/motor_on_off"):
+        rospy.loginfo("motor_on and motor_off service call has been enabled.")
+        rospy.loginfo("waiting for service...")
+        rospy.wait_for_service('/motor_on')
+        rospy.wait_for_service('/motor_off')
+        rospy.loginfo("motor_on and motor_off service found.")
+        rospy.on_shutdown(rospy.ServiceProxy('/motor_off', Trigger).call)
+        rospy.ServiceProxy('/motor_on', Trigger).call()
+    else:
+        rospy.loginfo("motor_on and motor_off service call has been disabled.")
+    autorun_flag = False
     logicool_cmd_vel = JoyTwist()
     rospy.spin()
