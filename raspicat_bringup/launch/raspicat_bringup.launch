@@ -48,7 +48,6 @@
     <arg name="view_width"              value="4.335"/>
   </include>
 
-
   <!-- rt_usb_9axisimu_driver -->
   <include if="$(arg imu)" file="$(find rt_usb_9axisimu_driver)/launch/rt_usb_9axisimu_driver.launch">
     <arg name="port" value="$(arg imu_serial_port)" />
