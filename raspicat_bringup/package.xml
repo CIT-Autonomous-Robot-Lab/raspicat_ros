@@ -25,6 +25,7 @@
   <depend>twist_mux</depend>
   <depend>urg_node</depend>
   <depend>rplidar_ros</depend>
+  <depend>velodyne</depend>
 
   <test_depend>roslaunch</test_depend>
 
