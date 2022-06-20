@@ -29,4 +29,9 @@
 
   <test_depend>roslaunch</test_depend>
 
+  <export>
+    <nodelet plugin="${prefix}/nodelets.xml"/>
+  </export>
+
+
 </package>
