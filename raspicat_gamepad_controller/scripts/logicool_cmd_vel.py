@@ -74,21 +74,7 @@ class JoyTwist(object):
                 twist.linear.x = 0.4
                 self._twist_pub.publish(twist)
             
-            #RBで加速LBで減速
-            if joy_msg.buttons[5] == 1:
-                upcount_flag = true
-            if joy_msg.buttons[4] == 1:
-                downcount_flag = true
 
-            if upcount_flag == true: 
-                    twist.linear.x += 0.2
-                    self._twist_pub.publish(twist)
-
-            if downcount_flag == true:
-                    twist.linear.x -= 0.2
-                    self._twist_pub.publish(twist)
-
-            
             '''
             #Rスティックで速度制御を行う
             if joy_msg.axes[4] > 0:
