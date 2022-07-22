@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import rospy
+import time
 from geometry_msgs.msg import Twist
 from std_srvs.srv import Trigger, TriggerResponse
 from sensor_msgs.msg import Joy
 
 autorun_flag = False
+i = 0
 
 class JoyTwist(object):
     def __init__(self):
@@ -32,9 +34,12 @@ class JoyTwist(object):
 
         twist = Twist()
         global autorun_flag
+        global i
 
         if joy_msg.buttons[3] == 1:
             autorun_flag = False
+            twist.linear.x = 0.4
+            i = 0
 
         if joy_msg.buttons[1] == 1:
             autorun_flag = True
@@ -46,7 +51,19 @@ class JoyTwist(object):
                 self._twist_pub.publish(twist)
 
         elif autorun_flag == True:
+            #accelerate
             twist.linear.x = 0.4
+
+            if i > 0 and joy_msg.buttons[4] == 1:
+                i -= 1
+                time.sleep(0.2)
+            if i < 3 and joy_msg.buttons[5] == 1:    
+                i += 1
+                time.sleep(0.2)
+
+            twist.linear.x += i * 0.2
+            #accelerate
+
             self._twist_pub.publish(twist)
             if joy_msg.axes[3] > 0:
                 twist.angular.z = 0.5 * joy_msg.axes[3]
@@ -60,7 +77,7 @@ class JoyTwist(object):
             elif joy_msg.axes[6] < 0:
                 twist.angular.z = 1.0 * joy_msg.axes[6]
                 self._twist_pub.publish(twist)
-        
+
         if joy_msg.buttons[0] == 1:
             # uncomment the following two lines to use speed up function
             #twist.linear.x = joy_msg.axes[1] * 0.4 * self.level
