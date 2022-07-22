@@ -7,7 +7,7 @@ from std_srvs.srv import Trigger, TriggerResponse
 from sensor_msgs.msg import Joy
 
 autorun_flag = False
-i = 0
+speedlevel = 0
 
 class JoyTwist(object):
     def __init__(self):
@@ -34,12 +34,12 @@ class JoyTwist(object):
 
         twist = Twist()
         global autorun_flag
-        global i
+        global speedlevel
 
         if joy_msg.buttons[3] == 1:
             autorun_flag = False
             twist.linear.x = 0.4
-            i = 0
+            speedlevel = 0
 
         if joy_msg.buttons[1] == 1:
             autorun_flag = True
@@ -54,14 +54,14 @@ class JoyTwist(object):
             #accelerate
             twist.linear.x = 0.4
 
-            if i > 0 and joy_msg.buttons[4] == 1:
-                i -= 1
+            if speedlevel > 0 and joy_msg.buttons[4] == 1:
+                speedlevel -= 1
                 time.sleep(0.2)
-            if i < 3 and joy_msg.buttons[5] == 1:    
-                i += 1
+            if speedlevel < 3 and joy_msg.buttons[5] == 1:    
+                speedlevel += 1
                 time.sleep(0.2)
 
-            twist.linear.x += i * 0.2
+            twist.linear.x += speedlevel * 0.2
             #accelerate
 
             self._twist_pub.publish(twist)
