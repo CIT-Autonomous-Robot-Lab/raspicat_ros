@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from tkinter import W
+
+from sqlalchemy import true
 import rospy
+import numpy as np
 from geometry_msgs.msg import Twist
 from std_srvs.srv import Trigger, TriggerResponse
 from sensor_msgs.msg import Joy
 
 autorun_flag = False
+downcount_flag = False
+upcount_flag = False
+
 
 class JoyTwist(object):
     def __init__(self):
@@ -21,6 +28,9 @@ class JoyTwist(object):
         if lvl >= 6:
             return 5
         return lvl
+
+    downcount_flag = False
+    upcount_flag = False
 
     def joy_callback(self, joy_msg):
 
@@ -46,8 +56,50 @@ class JoyTwist(object):
                 self._twist_pub.publish(twist)
 
         elif autorun_flag == True:
+            '''
+            #速度制御なし
             twist.linear.x = 0.4
             self._twist_pub.publish(twist)
+            '''
+            #RTで速度制御を行う
+            a = np.abs(joy_msg.axes[5] * -1 + 1) 
+            
+            if joy_msg.axes[5] != 1:
+                if a >= 1.0:
+                    twist.linear.x = 0.4 * a
+                    self._twist_pub.publish(twist)
+                else:
+                    twist.linear.x = 0.4
+                    self._twist_pub.publish(twist)
+
+            elif joy_msg.axes[5] == 1:
+                twist.linear.x = 0.4
+                self._twist_pub.publish(twist)
+            
+            #RBで加速LBで減速
+            if joy_msg.buttons[5] == 1:
+                upcount_flag = true
+            if joy_msg.buttons[4] == 1:
+                downcount_flag = true
+
+            if upcount_flag == true: 
+                    twist.linear.x += 0.2
+                    self._twist_pub.publish(twist)
+
+            if downcount_flag == true:
+                    twist.linear.x -= 0.2
+                    self._twist_pub.publish(twist)
+
+            
+            '''
+            #Rスティックで速度制御を行う
+            if joy_msg.axes[4] > 0:
+            	twist.linear.x = 0.4 * (joy_msg.axes[4] + 1)
+            	self._twist_pub.publish(twist)
+            elif  joy_msg.axes[4] == 0:
+            	twist.linear.x = 0.4
+            	self._twist_pub.publish(twist)
+            '''
             if joy_msg.axes[3] > 0:
                 twist.angular.z = 0.5 * joy_msg.axes[3]
                 self._twist_pub.publish(twist)
