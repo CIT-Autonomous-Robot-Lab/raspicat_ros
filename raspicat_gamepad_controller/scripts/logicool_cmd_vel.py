@@ -61,12 +61,10 @@ class JoyTwist(object):
             twist.linear.x = 0.4
             self._twist_pub.publish(twist)
             '''
-            #RTで速度制御を行う
-            a = np.abs(joy_msg.axes[5] * -1 + 1) 
-            
+            #RTで速度制御を行う            
             if joy_msg.axes[5] != 1:
-                if a >= 1.0:
-                    twist.linear.x = 0.4 * a
+                if np.abs(joy_msg.axes[5] * -1 + 1) >= 1.0:
+                    twist.linear.x = 0.4 * np.abs(joy_msg.axes[5] * -1 + 1)
                     self._twist_pub.publish(twist)
                 else:
                     twist.linear.x = 0.4
