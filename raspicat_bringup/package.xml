@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
   <depend>joint_state_publisher</depend>
+  <depend>joy_linux</depend>
   <depend>robot_state_publisher</depend>
   <depend>teleop_twist_joy</depend>
   <depend>urdf</depend>
