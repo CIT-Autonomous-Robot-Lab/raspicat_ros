@@ -2,9 +2,9 @@
 <launch>
   <!-- Arguments -->
   <arg name="imu"         default="false"/>
-  <arg name="joy"         default="false"/>
-  <arg name="urg"         default="false"/>
-  <arg name="rplidar"     default="false"/>
+  <arg name="joy"         default="true"/>
+  <arg name="urg"         default="true"/>
+  <arg name="rplidar"     default="true"/>
   <arg name="vlp16"       default="false"/>
   <arg name="lidar_ether" default="false"/>
   <arg name="lidar_usb"   default="true"/>
@@ -16,27 +16,34 @@
   <arg name="lidar_serial_port" default="/dev/ttyACM0"/>
   <arg name="lidar_ip_address"  default="192.16.0.10"/>
 
+  <arg name="model" default="$(find raspicat_description)/robots/raspicat.urdf.xacro"/>
+
   <!-- Raspberry Pi Cat nodes -->
   <include file="$(find raspicat_bringup)/launch/raspicat_core.launch"/>
-  
+
   <!-- URG node -->
   <node if="$(arg urg)" pkg="urg_node" name="urg_node" type="urg_node" required="true">
-    <param name="frame_id" value="$(arg lidar_frame_id)"/>
+  <remap from="scan" to="diag_scan"/>
+    <param name="frame_id" value="lidar2_link"/>
     <param if="$(arg lidar_ether)"  name="ip_address"   value="$(arg lidar_ip_address)"/>
     <param if="$(arg lidar_usb)"    name="serial_port"  value="$(arg lidar_serial_port)"/>
   </node>
 
   <!-- Rplidar_ros -->
   <node if="$(arg rplidar)" pkg="rplidar_ros" name="rplidarNode" type="rplidarNode" output="screen">
-    <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
+    <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>
     <param name="serial_baudrate"     type="int"    value="256000"/>
-    <param name="frame_id"            type="string" value="$(arg lidar_frame_id)"/>
+    <param name="frame_id"            type="string" value="lidar_link"/>
     <param name="inverted"            type="bool"   value="false"/>
     <param name="angle_compensate"    type="bool"   value="true"/>
   </node>
 
+  <node if="$(arg rplidar)" pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="laser_filter">
+    <rosparam command="load" file="$(find raspicat_bringup)/config/range_filter.yaml" />
+  </node>
+
   <!-- VLP16 -->
-  <include if="$(arg vlp16)" file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
+  <include if="$(arg vlp16)" file="$(find raspicat_bringup)/launch/vlp16.launch">
     <arg name="laserscan_resolution"    value="0.004"/>
     <arg name="laserscan_ring"          value="-1"/>
     <arg name="frame_id"                value="$(arg lidar_frame_id)"/>
@@ -57,6 +64,9 @@
       <arg name="dev" value="$(arg joy_dev)"/>
     </include>
 
-    <include file="$(find raspicat_gamepad_controller)/launch/smooth.launch"/>
+            <!--  <include file="$(find raspicat_gamepad_controller)/launch/smooth.launch"/> -->
   </group>
-</launch>
+
+  <!-- joint_state_publisher -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  </launch>
