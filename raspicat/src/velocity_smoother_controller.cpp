@@ -146,7 +146,8 @@ void VelocitySmootherController::callbackJoy(
     } else if (shouldExecute(msg->buttons, no_accel_decel_button_)) {
       no_accel_decel();
     } else {
-        stop();
+      no_accel_decel();
+      // stop();
     }
   }
 }
