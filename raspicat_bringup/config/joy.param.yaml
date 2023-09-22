@@ -10,6 +10,8 @@ teleop_twist_joy_node:
       x: 0.3
     axis_angular:
       yaw: 0
+    axis_angular_adjustment:
+      yaw: 3
     scale_angular:
       yaw: 0.4
     enable_button: 2
