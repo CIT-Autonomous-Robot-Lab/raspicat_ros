@@ -26,6 +26,8 @@ from launch.events import matches_action
 from launch.events import Shutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch_ros.events.lifecycle import ChangeState
+
 
 from launch_ros.actions import LifecycleNode
 from launch_ros.events import lifecycle
@@ -60,6 +62,57 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(os.path.join(
             launch_dir, 'robot_state_publisher.launch.py')),
     )
+
+
+    imu_node = LifecycleNode(
+            namespace='',
+            name = 'rt_usb_9axisimu_driver',
+            package='rt_usb_9axisimu_driver',
+            executable='rt_usb_9axisimu_driver',
+            output='screen'
+    )
+
+    emit_configuring_event_imu = EmitEvent(
+        event=lifecycle.ChangeState(
+            lifecycle_node_matcher=matches_action(imu_node),
+            transition_id=Transition.TRANSITION_CONFIGURE,
+        )
+    )
+
+    emit_activating_event_imu = EmitEvent(
+        event=lifecycle.ChangeState(
+            lifecycle_node_matcher=matches_action(imu_node),
+            transition_id=Transition.TRANSITION_ACTIVATE,
+        )
+    )
+
+    emit_shutdown_event = EmitEvent(
+    #emit_shutdown_event_imu = EmitEvent(
+
+        event=Shutdown()
+    )
+
+    register_activating_transition_imu = RegisterEventHandler(
+        OnStateTransition(
+            target_lifecycle_node=imu_node,
+            goal_state='inactive',
+            entities=[
+                 emit_activating_event_imu
+
+            ],
+        )
+    )
+
+    register_shutting_down_transition_imu = RegisterEventHandler(
+        OnStateTransition(
+            target_lifecycle_node=imu_node,
+            goal_state='finalized',
+            entities=[
+                emit_shutdown_event
+            ],
+        )
+    )
+
 
     mouse_node = LifecycleNode(
         namespace='',
@@ -114,10 +167,15 @@ def generate_launch_description():
 
     ld.add_action(urg_launch)
     ld.add_action(robot_state_publisher_launch)
-
+    ld.add_action(imu_node) 
     ld.add_action(mouse_node)
     ld.add_action(register_activating_transition)
     ld.add_action(register_shutting_down_transition)
     ld.add_action(emit_configuring_event)
+    ld.add_action(emit_configuring_event_imu)
+    ld.add_action(emit_activating_event_imu) 
+    ld.add_action(register_activating_transition_imu)
+    ld.add_action(register_shutting_down_transition_imu)
+
 
     return ld
