@@ -67,8 +67,6 @@ def generate_launch_description():
         package='raspimouse', executable='raspimouse', output='screen',
         parameters=[os.path.join(get_package_share_directory(
             'raspicat'), 'config', 'raspicat.param.yaml')]
-        #, {'odom_hz': 200.0}], 
-        #remappings=[('imu/data_raw', '/livox/imu')]
     )
 
     emit_configuring_event = EmitEvent(
@@ -109,67 +107,33 @@ def generate_launch_description():
         )
     )
 
-
-    imu_node = LifecycleNode(
-            namespace='',
-            name = 'rt_usb_9axisimu_driver',
-            package='rt_usb_9axisimu_driver',
-            executable='rt_usb_9axisimu_driver',
-            output='screen', 
-            parameters=[{'port': '/dev/ttyACM1'}], 
+    
+    raspicat_launch_dir = os.path.join(get_package_share_directory(
+        'raspicat'), 'launch')
+    raspicat_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(
+           raspicat_launch_dir, 'raspicat.launch.py'))
     )
-
-    emit_configuring_event_imu = EmitEvent(
-        event=lifecycle.ChangeState(
-            lifecycle_node_matcher=matches_action(imu_node),
-            transition_id=Transition.TRANSITION_CONFIGURE,
-        )
-    )
-
-    emit_activating_event_imu = EmitEvent(
-        event=lifecycle.ChangeState(
-            lifecycle_node_matcher=matches_action(imu_node),
-            transition_id=Transition.TRANSITION_ACTIVATE,
-        )
-    )
-
-    register_activating_transition_imu = RegisterEventHandler(
-        OnStateTransition(
-            target_lifecycle_node=imu_node,
-            goal_state='inactive',
-            entities=[
-                 emit_activating_event_imu
-
-            ],
-        )
-    )
-
-    register_shutting_down_transition_imu = RegisterEventHandler(
-        OnStateTransition(
-            target_lifecycle_node=imu_node,
-            goal_state='finalized',
-            entities=[
-                emit_shutdown_event
-            ],
-        )
+    gnss_launch_dir = os.path.join(get_package_share_directory(
+        'gnss_launch') + '/launch/')
+    gnss_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(
+           gnss_launch_dir, 'ublox_gps_node-zed_f9r.launch.py'))
     )
 
     ld = LaunchDescription()
 
-    ld.add_action(declare_use_urg)
-    ld.add_action(declare_urg_interface)
+    # ld.add_action(declare_use_urg)
+    # ld.add_action(declare_urg_interface)
 
-    ld.add_action(urg_launch)
-    ld.add_action(robot_state_publisher_launch)
+    # ld.add_action(urg_launch)
+    # ld.add_action(robot_state_publisher_launch)
 
-    ld.add_action(mouse_node)
-    ld.add_action(register_activating_transition)
-    ld.add_action(register_shutting_down_transition)
-    ld.add_action(emit_configuring_event)
+    # ld.add_action(mouse_node)
+    # ld.add_action(register_activating_transition)
+    # ld.add_action(register_shutting_down_transition)
+    # ld.add_action(emit_configuring_event)
+    ld.add_action(raspicat_launch)
+    ld.add_action(gnss_launch)
 
-    ld.add_action(imu_node)
-    ld.add_action(emit_configuring_event_imu)
-    ld.add_action(emit_activating_event_imu) 
-    ld.add_action(register_activating_transition_imu)
-    ld.add_action(register_shutting_down_transition_imu)
     return ld
