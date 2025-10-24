@@ -57,26 +57,25 @@ def generate_launch_description():
                 executable='teleop_node',
                 name='teleop_twist_joy_node',
                 parameters=[joy_config_filepath],
-                remappings={
-                    ('/cmd_vel', str(teleop.perform(LaunchContext())) + '_vel')},
+                # remappings={('/cmd_vel', str(teleop.perform(LaunchContext())) + '_vel')},
             ),
-            Node(
-                package='raspicat',
-                executable='velocity_smoother_controller',
-                name='velocity_smoother_controller_node',
-                parameters=[joy_config_filepath],
-                remappings={
-                    ('/input_vel',  str(teleop.perform(LaunchContext())) + '_vel'),
-                    ('/output_vel', output_vel)},
-            ),
-            Node(
-                package='nav2_velocity_smoother',
-                executable='velocity_smoother',
-                name='velocity_smoother_node',
-                parameters=[joy_config_filepath],
-                remappings={
-                    ('/cmd_vel', 'control_vel')},
-            ),
+            # Node(
+            #     package='raspicat',
+            #     executable='velocity_smoother_controller',
+            #     name='velocity_smoother_controller_node',
+            #     parameters=[joy_config_filepath],
+            #     remappings={
+            #         ('/input_vel',  str(teleop.perform(LaunchContext())) + '_vel'),
+            #         ('/output_vel', output_vel)},
+            # ),
+            # Node(
+            #     package='nav2_velocity_smoother',
+            #     executable='velocity_smoother',
+            #     name='velocity_smoother_node',
+            #     parameters=[joy_config_filepath],
+            #     remappings={
+            #         ('/cmd_vel', 'control_vel')},
+            # ),
         ]
     )
 
@@ -92,24 +91,23 @@ def generate_launch_description():
                 name='teleop_twist_key_node',
                 output='screen',
                 prefix='xterm -e',
-                remappings={
-                    ('/cmd_vel',  str(teleop.perform(LaunchContext())) + '_vel')},
+                # remappings={('/cmd_vel',  str(teleop.perform(LaunchContext())) + '_vel')},
             ),
-            Node(
-                package='raspicat',
-                executable='velocity_smoother_controller',
-                name='velocity_smoother_controller_node',
-                remappings={
-                    ('/input_vel',  str(teleop.perform(LaunchContext())) + '_vel'),
-                    ('/output_vel', output_vel)},
-            ),
-            Node(
-                package='nav2_velocity_smoother',
-                executable='velocity_smoother',
-                name='velocity_smoother_node',
-                remappings={
-                    ('/cmd_vel', 'control_vel')},
-            ),
+            # Node(
+            #     package='raspicat',
+            #     executable='velocity_smoother_controller',
+            #     name='velocity_smoother_controller_node',
+            #     remappings={
+            #         ('/input_vel',  str(teleop.perform(LaunchContext())) + '_vel'),
+            #         ('/output_vel', output_vel)},
+            # ),
+            # Node(
+            #     package='nav2_velocity_smoother',
+            #     executable='velocity_smoother',
+            #     name='velocity_smoother_node',
+            #     remappings={
+            #         ('/cmd_vel', 'control_vel')},
+            # ),
         ]
     )
 
