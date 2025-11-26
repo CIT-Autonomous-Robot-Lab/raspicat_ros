@@ -116,7 +116,7 @@ def generate_launch_description():
             package='rt_usb_9axisimu_driver',
             executable='rt_usb_9axisimu_driver',
             output='screen', 
-            parameters=[{'port': '/dev/ttyACM1'}], 
+            #parameters=[{'port': '/dev/ttyACM1'}], 
     )
 
     emit_configuring_event_imu = EmitEvent(
