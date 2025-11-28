@@ -14,3 +14,4 @@ raspimouse:
     odom_frame_id             : "odom"
     odom_child_frame_id       : "base_footprint"
     odom_frame_prefix         : ""
+    odom_straight_only        : true
